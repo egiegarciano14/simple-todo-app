@@ -2,15 +2,15 @@ import { useState } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from './redux/store';
-import { addTodo, removeTodo, setTodoStatus } from './redux/todoSlice';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import { RootState } from './redux/store';
+import { addTodo, removeTodo, setTodoStatus } from './redux/todo/slice';
 
 const App = () => {
   const [todoDescription, setTodoDescription] = useState('');
 
-  const todoList = useSelector((state: RootState) => state);
-  const dispatch = useDispatch<AppDispatch>();
+  const todoList = useAppSelector((state: RootState) => state.todo);
+  const dispatch = useAppDispatch();
 
   return (
     <main className='mt-11 flex h-screen flex-col items-center font-semibold'>

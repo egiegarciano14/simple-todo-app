@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { store } from './redux/store';
+import { setupStore } from './redux/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,7 +13,7 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <CssBaseline />
-    <Provider store={store}>
+    <Provider store={setupStore()}>
       <App />
     </Provider>
   </React.StrictMode>,
