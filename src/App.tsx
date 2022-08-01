@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,38 +27,43 @@ const App = () => {
         />
         <button
           type='submit'
+          style={{ backgroundColor: 'blue' }}
           onClick={() => {
             todoDescription !== '' && dispatch(addTodo(todoDescription.trim()));
             setTodoDescription('');
           }}
-          className='mt-3 mb-4 rounded bg-blue-500 p-2 text-white'
+          className='mt-3 mb-4 rounded p-2 text-white'
         >
           Add Item
         </button>
       </form>
 
-      {todoList.map((todo) => (
-        <div key={todo.id} className='flex w-2/4 items-center justify-between'>
-          <div className={`${todo.completed ? 'line-through' : ''}`}>{todo.description}</div>
-          <div className='flex items-center'>
-            <button
-              data-testid='delete-button'
-              onClick={() => {
-                dispatch(removeTodo(todo.id));
-              }}
-            >
-              <DeleteIcon />
-            </button>
-            <Checkbox
-              edge='end'
-              value={todo.completed}
-              onChange={() => {
-                dispatch(setTodoStatus({ completed: !todo.completed, id: todo.id }));
-              }}
-            />
-          </div>
-        </div>
-      ))}
+      <ul className='w-2/4'>
+        {todoList.map((todo) => (
+          <li key={todo.id} className='flex items-center justify-between'>
+            <div style={{ textDecorationLine: `${todo.completed ? 'line-through' : ''}` }}>
+              {todo.description}
+            </div>
+            <div className='flex items-center'>
+              <button
+                data-testid='delete-button'
+                onClick={() => {
+                  dispatch(removeTodo(todo.id));
+                }}
+              >
+                <DeleteIcon />
+              </button>
+              <Checkbox
+                edge='end'
+                value={todo.completed}
+                onChange={() => {
+                  dispatch(setTodoStatus({ completed: !todo.completed, id: todo.id }));
+                }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 };
