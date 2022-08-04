@@ -4,7 +4,6 @@ import { Provider } from 'react-redux';
 import { setupStore } from './redux/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import './index.css';
 
 const container = document.getElementById('root')!;
@@ -12,7 +11,6 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <CssBaseline />
     <Provider store={setupStore()}>
       <App />
     </Provider>

@@ -4,7 +4,7 @@ import type { PreloadedState } from '@reduxjs/toolkit';
 import todosReducer from './todo/slice';
 
 const rootReducer = combineReducers({
-  todo: todosReducer,
+  todos: todosReducer,
 });
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {

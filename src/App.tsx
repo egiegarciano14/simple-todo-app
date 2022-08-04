@@ -3,13 +3,12 @@ import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { RootState } from './redux/store';
-import { addTodo, removeTodo, setTodoStatus } from './redux/todo/slice';
+import { addTodo, removeTodo, setTodoStatus, todoLists } from './redux/todo/slice';
 
 const App = () => {
   const [todoDescription, setTodoDescription] = useState('');
 
-  const todoList = useAppSelector((state: RootState) => state.todo);
+  const todoList = useAppSelector(todoLists);
   const dispatch = useAppDispatch();
 
   return (
