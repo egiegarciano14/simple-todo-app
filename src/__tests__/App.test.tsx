@@ -1,10 +1,13 @@
 import { screen, cleanup, within } from '@testing-library/react';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
 import userEvent from '@testing-library/user-event';
 import { renderWithProviders } from '../utils/test-utils';
 import { setupStore } from '../redux/store';
-import todosReducer, { addTodo } from '../redux/todo/slice';
-import { useAppSelector } from '../redux/hooks';
+import todosReducer, { addTodo, removeTodo, setTodoStatus } from '../redux/todo/slice';
+import { getTodoLists } from '../redux/todo/selector';
 import App from '../App';
+import { Todo } from '../interface/Todo';
 
 const view = () => renderWithProviders(<App />);
 
@@ -82,11 +85,13 @@ describe('Should add todo item', () => {
 
 describe('Should delete todo item and should todo item as complete', () => {
   test('user can check todo item as complete', async () => {
-    const initialTodos = [{ id: 1, description: 'Buy milk', completed: false }];
+    const initialTodos = [{ id: 1, title: 'Buy milk', completed: false }];
 
     renderWithProviders(<App />, {
       preloadedState: {
-        todos: initialTodos,
+        todos: {
+          todoLists: initialTodos,
+        },
       },
     });
 
@@ -102,7 +107,6 @@ describe('Should delete todo item and should todo item as complete', () => {
   test('user can delete todo item', async () => {
     const store = setupStore();
     store.dispatch(addTodo('Buy milk'));
-
     renderWithProviders(<App />, { store });
 
     const user = userEvent.setup();
@@ -114,30 +118,102 @@ describe('Should delete todo item and should todo item as complete', () => {
   });
 });
 
-describe('Check the initial state with reducers', () => {
+describe('Should check the initial state with todo reducers', () => {
   test('should return the initial state', () => {
-    expect(todosReducer(undefined, { type: undefined })).toEqual([]);
+    expect(todosReducer(undefined, { type: undefined })).toEqual({ todoLists: [] });
   });
 
   test('should handle a todo being added to an empty list', () => {
-    expect(todosReducer(undefined, addTodo('Buy milk'))).toEqual([
-      { id: 0, description: 'Buy milk', completed: false },
-    ]);
+    expect(todosReducer(undefined, addTodo('Buy milk'))).toEqual({
+      todoLists: [{ id: 2, title: 'Buy milk', completed: false }],
+    });
   });
 
   test('should handle a todo being added to an existing list', () => {
-    const previousState = [{ id: 0, description: 'Buy milk', completed: true }];
+    const previousState = { todoLists: [{ id: 0, title: 'Buy milk', completed: true }] };
 
-    expect(todosReducer(previousState, addTodo('Buy cereal'))).toEqual([
-      { id: 0, description: 'Buy milk', completed: true },
-      { id: 1, description: 'Buy cereal', completed: false },
-    ]);
+    expect(todosReducer(previousState, addTodo('Buy cereal'))).toEqual({
+      todoLists: [
+        { id: 0, title: 'Buy milk', completed: true },
+        { id: 3, title: 'Buy cereal', completed: false },
+      ],
+    });
+  });
+
+  test('should remove a todo item', () => {
+    const previousState = {
+      todoLists: [
+        { id: 0, title: 'Buy milk', completed: true },
+        { id: 1, title: 'Buy cereal', completed: false },
+      ],
+    };
+
+    expect(todosReducer(previousState, removeTodo(0))).toEqual({
+      todoLists: [{ id: 1, title: 'Buy cereal', completed: false }],
+    });
+  });
+
+  test('should set the satus of item to complete and not complete', () => {
+    const previousState = {
+      todoLists: [
+        { id: 0, title: 'Buy milk', completed: true },
+        { id: 1, title: 'Buy cereal', completed: false },
+      ],
+    };
+
+    expect(todosReducer(previousState, setTodoStatus({ completed: false, id: 0 }))).toEqual({
+      todoLists: [
+        { id: 0, title: 'Buy milk', completed: false },
+        { id: 1, title: 'Buy cereal', completed: false },
+      ],
+    });
+
+    expect(todosReducer(previousState, setTodoStatus({ completed: true, id: 1 }))).toEqual({
+      todoLists: [
+        { id: 0, title: 'Buy milk', completed: true },
+        { id: 1, title: 'Buy cereal', completed: true },
+      ],
+    });
   });
 });
 
-// describe('Test selectors', () => {
-//   test('should return the initial state', () => {
-//     expect(todosReducer(undefined, { type: undefined })).toEqual([]);
+describe('Should check the initial state with todo selectors', () => {
+  test('should return the initial state', () => {
+    const state: any = {
+      todos: {
+        todoLists: [] as Todo[],
+      },
+    };
+
+    expect(getTodoLists(state)).toEqual({ todoLists: [] });
+  });
+
+  test('should return the existing state', () => {
+    const state: any = {
+      todos: { todoLists: [{ id: 1, title: 'Buy milk', completed: false }] },
+    };
+
+    expect(getTodoLists(state)).toEqual({
+      todoLists: [{ id: 1, title: 'Buy milk', completed: false }],
+    });
+  });
+});
+
+// const handlers = rest.get('https://jsonplaceholder.typicode.com/todos/1', (req, res, ctx) => {
+//   return req.json();
+// });
+// const server = setupServer(handlers);
+// console.log(handlers);
+
+// beforeAll(() => server.listen());
+
+// afterEach(() => server.resetHandlers());
+
+// afterAll(() => server.close());
+
+// describe('Fetch todo list', () => {
+//   test('should fetch todo list', async () => {
+//     expect(await screen.findByText('delectus aut autem')).toBeInTheDocument();
 //   });
 // });
 

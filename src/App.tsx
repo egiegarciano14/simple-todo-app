@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { addTodo, removeTodo, setTodoStatus, todoLists } from './redux/todo/slice';
+import { addTodo, removeTodo, setTodoStatus } from './redux/todo/slice';
+import { getTodoLists } from './redux/todo/selector';
+import { getFetchTodoLists } from './redux/fetchTodo/selector';
+import { fetchTodos } from './redux/fetchTodo/slice';
 
 const App = () => {
   const [todoDescription, setTodoDescription] = useState('');
 
-  const todoList = useAppSelector(todoLists);
+  const { todoLists } = useAppSelector(getTodoLists);
   const dispatch = useAppDispatch();
+
+  const { fetchTodoList, loading } = useAppSelector(getFetchTodoLists);
+
+  useEffect(() => {
+    dispatch(fetchTodos());
+  }, [dispatch]);
 
   return (
     <main className='mt-11 flex h-screen flex-col items-center font-semibold'>
@@ -37,11 +46,42 @@ const App = () => {
         </button>
       </form>
 
+      {loading ? (
+        'Loading...'
+      ) : (
+        <ul className='w-2/4'>
+          <li className='flex items-center justify-between'>
+            <div style={{ textDecorationLine: `${fetchTodoList.completed ? 'line-through' : ''}` }}>
+              {fetchTodoList.title}
+            </div>
+            <div className='flex items-center'>
+              <button
+                data-testid='delete-button'
+                onClick={() => {
+                  dispatch(removeTodo(fetchTodoList.id));
+                }}
+              >
+                <DeleteIcon />
+              </button>
+              <Checkbox
+                edge='end'
+                value={fetchTodoList.completed}
+                onChange={() => {
+                  dispatch(
+                    setTodoStatus({ completed: !fetchTodoList.completed, id: fetchTodoList.id }),
+                  );
+                }}
+              />
+            </div>
+          </li>
+        </ul>
+      )}
+
       <ul className='w-2/4'>
-        {todoList.map((todo) => (
+        {todoLists.map((todo) => (
           <li key={todo.id} className='flex items-center justify-between'>
             <div style={{ textDecorationLine: `${todo.completed ? 'line-through' : ''}` }}>
-              {todo.description}
+              {todo.title}
             </div>
             <div className='flex items-center'>
               <button
