@@ -18,7 +18,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(fetchTodos());
-  }, [dispatch]);
+  }, []);
 
   return (
     <main className='mt-11 flex h-screen flex-col items-center font-semibold'>
@@ -52,7 +52,7 @@ const App = () => {
         <ul className='w-2/4'>
           <li className='flex items-center justify-between'>
             <div style={{ textDecorationLine: `${fetchTodoList.completed ? 'line-through' : ''}` }}>
-              {fetchTodoList.title}
+              {fetchTodoList?.title}
             </div>
             <div className='flex items-center'>
               <button

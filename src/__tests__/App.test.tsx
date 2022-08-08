@@ -199,23 +199,16 @@ describe('Should check the initial state with todo selectors', () => {
   });
 });
 
-// const handlers = rest.get('https://jsonplaceholder.typicode.com/todos/1', (req, res, ctx) => {
-//   return req.json();
-// });
-// const server = setupServer(handlers);
-// console.log(handlers);
+describe('Fetch todo list', () => {
+  test('should fetch todo list', async () => {
+    view();
 
-// beforeAll(() => server.listen());
+    const listItem = await screen.findByText('delectus aut autem');
+    // const listItemText = await within(listItem).findByText('Buy milk');
 
-// afterEach(() => server.resetHandlers());
-
-// afterAll(() => server.close());
-
-// describe('Fetch todo list', () => {
-//   test('should fetch todo list', async () => {
-//     expect(await screen.findByText('delectus aut autem')).toBeInTheDocument();
-//   });
-// });
+    expect(listItem).toBeInTheDocument();
+  });
+});
 
 // test that user can visit localhost:3000/s
 // test components

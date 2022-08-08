@@ -4,9 +4,9 @@ export interface Todo {
   completed: boolean;
 }
 
-export interface FetchTodo {
+export type FetchTodo = {
   userId: number;
   id: number;
   title: string;
   completed: boolean;
-}
+};
