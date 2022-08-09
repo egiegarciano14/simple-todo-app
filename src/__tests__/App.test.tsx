@@ -19,6 +19,11 @@ describe('View is rendered properly', () => {
   test('Heading text should displayed', () => {
     view();
 
+    // Possible solution to "not wrapped in act" erros
+    // await act(async () => {
+    // await view();
+    // });
+
     const headingText = screen.getByRole('heading');
 
     expect(headingText).toHaveTextContent('Todo List');
