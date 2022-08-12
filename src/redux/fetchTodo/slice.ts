@@ -1,29 +1,27 @@
-import axios from 'axios';
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { FetchTodo } from '../../interface/Todo';
-
-export const fetchTodos = createAsyncThunk<FetchTodo>('todos/fetchTodos', async () => {
-  try {
-    const res = await axios.get('https://jsonplaceholder.typicode.com/todos/1');
-    return res.data;
-  } catch (err) {
-    console.log(err);
-  }
-  // const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-  // return (await response.json()) as FetchTodo;
-});
+import { createSlice } from '@reduxjs/toolkit';
+import { addTodos, getAllTodo, deleteTodo, updateTodo } from '../todo/thunks';
+import { Todo } from '../../interface/Todo';
 
 const fetchTodoSlice = createSlice({
   name: 'fetchTodo',
   initialState: {
     loading: true,
-    fetchTodoList: {} as FetchTodo,
+    fetchTodoList: [] as Todo[],
   },
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(fetchTodos.fulfilled, (state, action) => {
+    builder.addCase(addTodos.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(getAllTodo.fulfilled, (state, action) => {
       state.loading = false;
       state.fetchTodoList = action.payload;
+    });
+    builder.addCase(deleteTodo.fulfilled, (state, action) => {
+      state.loading = false;
+    });
+    builder.addCase(updateTodo.fulfilled, (state, action) => {
+      state.loading = false;
     });
   },
 });

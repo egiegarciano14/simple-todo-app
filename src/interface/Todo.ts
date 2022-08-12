@@ -1,8 +1,8 @@
-export interface Todo {
+export type Todo = {
   id: number;
   title: string;
   completed: boolean;
-}
+};
 
 export type FetchTodo = {
   userId: number;
