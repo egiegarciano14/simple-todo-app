@@ -3,15 +3,15 @@ import Checkbox from '@material-ui/core/Checkbox';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import { addTodo, removeTodo, setTodoStatus } from './redux/todo/slice';
-import { getTodoLists } from './redux/todo/selector';
+// import { addTodo, removeTodo, setTodoStatus } from './redux/todo/slice';
+// import { getTodoLists } from './redux/todo/selector';
 import { getFetchTodoLists } from './redux/fetchTodo/selector';
-import { addTodos, getAllTodo, deleteTodo, updateTodo } from './redux/todo/thunks';
+import { addTodos, getAllTodo, deleteTodo, updateTodo } from './redux/fetchTodo/thunks';
 
 const App = () => {
   const dispatch = useAppDispatch();
 
-  const { todoLists } = useAppSelector(getTodoLists);
+  // const { todoLists } = useAppSelector(getTodoLists);
   const { fetchTodoList, loading } = useAppSelector(getFetchTodoLists);
 
   const [title, setTitle] = useState('');
@@ -23,12 +23,11 @@ const App = () => {
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
-    title !== '' && dispatch(addTodos(title.trim()));
-    setTitle('');
-
-    setTimeout(() => {
-      dispatch(getAllTodo());
-    }, 100);
+    title !== '' &&
+      dispatch(addTodos(title.trim())).then(() => {
+        setTitle('');
+        dispatch(getAllTodo());
+      });
   };
 
   return (
@@ -66,10 +65,9 @@ const App = () => {
                 <button
                   data-testid='delete-button'
                   onClick={() => {
-                    dispatch(deleteTodo(todo.id));
-                    setTimeout(() => {
+                    dispatch(deleteTodo(todo.id)).then(() => {
                       dispatch(getAllTodo());
-                    }, 100);
+                    });
                   }}
                 >
                   <DeleteIcon />
@@ -79,10 +77,9 @@ const App = () => {
                   value={todo.completed}
                   checked={todo.completed && todo.completed}
                   onChange={() => {
-                    dispatch(updateTodo({ id: todo.id, completed: !todo.completed }));
-                    setTimeout(() => {
+                    dispatch(updateTodo({ id: todo.id, completed: !todo.completed })).then(() => {
                       dispatch(getAllTodo());
-                    }, 100);
+                    });
                   }}
                 />
               </div>
@@ -91,32 +88,10 @@ const App = () => {
         </ul>
       )}
 
-      {/* <ul className='w-2/4'>
-        {todoLists.map((todo) => (
-          <li key={todo.id} className='flex items-center justify-between'>
-            <div style={{ textDecorationLine: `${todo.completed ? 'line-through' : ''}` }}>
-              {todo.title}
-            </div>
-            <div className='flex items-center'>
-              <button
-                data-testid='delete-button'
-                onClick={() => {
-                  dispatch(removeTodo(todo.id));
-                }}
-              >
-                <DeleteIcon />
-              </button>
-              <Checkbox
-                edge='end'
-                value={todo.completed}
-                onChange={() => {
-                  dispatch(setTodoStatus({ completed: !todo.completed, id: todo.id }));
-                }}
-              />
-            </div>
-          </li>
-        ))}
-      </ul> */}
+      {/* Todo: fetch all the todo when the status is completed */}
+      {/* <div className='mt-10'>
+        <div>All Completed Todos</div>
+      </div> */}
     </main>
   );
 };
